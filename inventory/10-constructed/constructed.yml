@@ -1,0 +1,7 @@
+plugin: constructed
+strict: false
+keyed_groups:
+  - prefix: "role"
+    key: node_role
+  - prefix: "vendor"
+    key: vendor

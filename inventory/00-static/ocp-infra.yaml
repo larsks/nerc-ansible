@@ -1,0 +1,14 @@
+all:
+  children:
+    nerc_ocp:
+      children:
+        nerc_ocp_infra:
+          children:
+            nerc_ocp_infra_controllers:
+              vars:
+                node_role: openshift_controller
+                vendor: lenovo
+              hosts:
+                ctl-0.nerc-ocp-infra.rc.fas.harvard.edu:
+                ctl-1.nerc-ocp-infra.rc.fas.harvard.edu:
+                ctl-2.nerc-ocp-infra.rc.fas.harvard.edu:

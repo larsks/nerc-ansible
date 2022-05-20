@@ -1,0 +1,14 @@
+all:
+  vars:
+    hostname_parts: "{{ inventory_hostname.split('.') }}"
+    bmc_credentials: "{{ lookup('amazon.aws.aws_secret', 'cluster/nerc/ocp/bmc') | from_json }}"
+  children:
+    nerc_ocp:
+      vars:
+        bmc_addr: "{{ (['{}-obm'.format(hostname_parts[0])] + hostname_parts[1:])|join('.') }}"
+        bmc_user: "{{ bmc_credentials.username }}"
+        bmc_password: "{{ bmc_credentials.password }}"
+    nerc_ocp_bmc:
+      vars:
+        ansible_user: "{{ bmc_credentials.username }}"
+        ansible_ssh_pass: "{{ bmc_credentials.password }}"

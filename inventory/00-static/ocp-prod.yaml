@@ -1,0 +1,43 @@
+all:
+  children:
+    nerc_ocp:
+      children:
+        nerc_ocp_prod:
+          children:
+            nerc_ocp_prod_controllers:
+              vars:
+                node_role: openshift_controller
+                vendor: lenovo
+              hosts:
+                ctl-0.nerc-ocp-prod.rc.fas.harvard.edu:
+                ctl-1.nerc-ocp-prod.rc.fas.harvard.edu:
+                ctl-2.nerc-ocp-prod.rc.fas.harvard.edu:
+            nerc_ocp_prod_workers:
+              vars:
+                node_role: openshift_worker
+                vendor: dell
+              hosts:
+                wrk-0.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-1.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-2.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-3.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-4.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-5.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-6.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-7.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-8.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-9.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-10.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-11.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-12.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-13.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-14.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-15.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-16.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-17.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-18.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-19.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-20.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-21.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-22.nerc-ocp-prod.rc.fas.harvard.edu:
+                wrk-23.nerc-ocp-prod.rc.fas.harvard.edu:

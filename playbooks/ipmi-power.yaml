@@ -1,0 +1,13 @@
+- hosts: nerc_ocp
+  gather_facts: false
+  vars:
+    power_action: status
+  tasks:
+    - name: Run power {{ power_action }} command
+      delegate_to: localhost
+      command: >-
+        ipmitool -I lanplus -H {{ bmc_addr }} -U {{ bmc_user }} -P {{ bmc_password }} power {{ power_action }}
+      register: result
+
+    - debug:
+        var: result.stdout
