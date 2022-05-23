@@ -1,5 +1,7 @@
 # OCP on NERC Ansible Inventory
 
+## Overview
+
 In this repository:
 
 - `inventory`
@@ -38,6 +40,14 @@ In this repository:
 
   - `playbooks/enable-ipmilan.yaml` -- enables remote IPMI access using `racadm`
   - `playbooks/ipmi-power.yaml` -- runs ipmi power commands on selected hosts
+
+## Prerequisites
+
+This project requires some non-default Ansible collections (such as the `amazon.aws` collection for the `aws_secret` lookup). You can install these requirements using the `ansible-galaxy` command:
+
+```
+ansible-galaxy install -r requirements.yaml
+```
 
 ## Credentials
 
