@@ -1,0 +1,171 @@
+- hosts: nerc_ocp
+  gather_facts: false
+  tasks:
+    # When we generate the report in the next play, we want
+    # to know which hosts were targeted by this play.
+    - name: record hosts in play
+      delegate_to: localhost
+      delegate_facts: true
+      run_once: true
+      set_fact:
+        saved_play_hosts: "{{ ansible_play_hosts }}"
+
+    # We use a block/rescue here to cause Ansible to continue
+    # executing other plays in this playbook even if all the hosts
+    # in this play fail. See https://stackoverflow.com/a/71957928/9131523
+    # for some discussion of this solution.
+    - rescue:
+        - meta: clear_host_errors
+        - meta: end_host
+      block:
+        - name: get list of systems
+          delegate_to: localhost
+          uri:
+            url: "https://{{ bmc_addr }}/redfish/v1/Systems"
+            user: "{{ bmc_user }}"
+            password: "{{ bmc_password }}"
+            validate_certs: false
+            force_basic_auth: true
+          register: systems
+          until: systems is success
+          retries: 5
+          delay: 5
+
+        # We assume there's only a single system, so let's make sure
+        # that's true.
+        - assert:
+            that: >-
+              systems.json.Members|length == 1
+
+        - name: get system
+          delegate_to: localhost
+          uri:
+            url: "https://{{ bmc_addr }}{{ systems.json.Members[0]['@odata.id'] }}"
+            user: "{{ bmc_user }}"
+            password: "{{ bmc_password }}"
+            validate_certs: false
+            force_basic_auth: true
+          register: system
+          until: system is success
+          retries: 5
+          delay: 5
+
+        - name: get processors
+          delegate_to: localhost
+          uri:
+            url: "https://{{ bmc_addr }}{{system.json.Processors['@odata.id']}}"
+            user: "{{ bmc_user }}"
+            password: "{{ bmc_password }}"
+            validate_certs: false
+            force_basic_auth: true
+          register: processors
+          until: processors is success
+          retries: 5
+          delay: 5
+
+        # Here, we're assuming all processors are identical, so we only get
+        # details on the first one.
+        - name: get 1 processor
+          delegate_to: localhost
+          uri:
+            url: "https://{{ bmc_addr }}{{processors.json.Members[0]['@odata.id']}}"
+            user: "{{ bmc_user }}"
+            password: "{{ bmc_password }}"
+            validate_certs: false
+            force_basic_auth: true
+          register: processor
+          until: processor is success
+          retries: 5
+          delay: 5
+
+        - name: get interfaces
+          delegate_to: localhost
+          uri:
+            url: "https://{{ bmc_addr }}{{system.json.EthernetInterfaces['@odata.id'] }}"
+            user: "{{ bmc_user }}"
+            password: "{{ bmc_password }}"
+            validate_certs: false
+            force_basic_auth: true
+          register: interfaces_list
+          until: interfaces_list is success
+          retries: 5
+          delay: 5
+
+        - name: get interface details
+          delegate_to: localhost
+          loop: "{{ interfaces_list.json.Members }}"
+          uri:
+            url: "https://{{ bmc_addr }}{{ item['@odata.id'] }}"
+            user: "{{ bmc_user }}"
+            password: "{{ bmc_password }}"
+            validate_certs: false
+            force_basic_auth: true
+          register: interfaces
+          until: interfaces is success
+          retries: 5
+          delay: 5
+
+- hosts: vendor_lenovo
+  gather_facts: false
+  tasks:
+    - name: get chassis location
+      delegate_to: localhost
+      uri:
+        url: "https://{{ bmc_addr }}/redfish/v1/Chassis/2"
+        user: "{{ bmc_user }}"
+        password: "{{ bmc_password }}"
+        validate_certs: false
+        force_basic_auth: true
+      register: chassis
+      until: chassis is success
+      retries: 5
+      delay: 5
+
+- hosts: localhost
+  gather_facts: false
+  vars:
+    hardware_inventory_path: hardware.csv
+  tasks:
+    - name: discard old hardware inventory
+      when: not update_inventory|default(false)|bool
+      file:
+        path: "{{ hardware_inventory_path }}"
+        state: absent
+
+    # We're using lineinfile here, rather than template, because that
+    # allows us to update the information for subsets of hosts (e.g., using
+    # the `-l` command line option to `ansible-playbook`).
+    - name: add header to hardware list
+      lineinfile:
+        create: true
+        path: "{{ hardware_inventory_path }}"
+        regexp: "^host,"
+        line: "host,node_role,cluster,manufacturer,model,serialnumber,sku,memory,processor_mode,processor_count,processor_cores,processor_cores_total,chassis_bay,mac_addresses"
+        insertbefore: BOF
+
+    - name: update hardware list (good)
+      lineinfile:
+        create: true
+        path: "{{ hardware_inventory_path }}"
+        regexp: "^{{ item }}"
+        line: >-
+          {{item}},{{hostvars[item].node_role}},{{hostvars[item].cluster_name}},{{system.Manufacturer}},{{system.Model}},{{system.SerialNumber}},{{system.SKU}},{{system.MemorySummary.TotalSystemMemoryGiB}},{{processor.Model}},{{system.ProcessorSummary.Count|default('n/a')}},{{processor.TotalCores}},{{processor.TotalCores * system.ProcessorSummary.Count}},{{chassis.Location.PartLocation.LocationOrdinalValue|default('')}},"{{interfaces|json_query('[*].json.[MacAddress,MACAddress]')|flatten|join(',')}}"
+      vars:
+        interfaces: "{{ hostvars[item].interfaces.results }}"
+        chassis: "{{ hostvars[item].chassis.json|default({}) }}"
+        system: "{{ hostvars[item].system.json }}"
+        processor: "{{ hostvars[item].processor.json }}"
+      when: >-
+        "system" in hostvars[item]
+      loop: "{{ saved_play_hosts }}"
+
+    - name: update hardware list (bad)
+      lineinfile:
+        create: true
+        path: "{{ hardware_inventory_path }}"
+        regexp: "^{{ item }}"
+        line: >-
+          {{item}},{{hostvars[item].node_role}},{{hostvars[item].cluster_name}},failed,failed,failed,failed,failed,failed,failed,failed,failed,failed,"failed"
+      when: >-
+        "system" not in hostvars[item]
+      loop: "{{ saved_play_hosts }}"

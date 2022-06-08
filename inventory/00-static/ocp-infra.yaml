@@ -3,6 +3,8 @@ all:
     nerc_ocp:
       children:
         nerc_ocp_infra:
+          vars:
+            cluster_name: nerc-ocp-infra
           children:
             nerc_ocp_infra_controllers:
               vars:

@@ -3,6 +3,8 @@ all:
     nerc_ocp:
       children:
         nerc_ocp_prod:
+          vars:
+            cluster_name: nerc-ocp-prod
           children:
             nerc_ocp_prod_controllers:
               vars:
