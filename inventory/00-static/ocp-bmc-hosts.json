@@ -96,7 +96,17 @@
           "wrk-85-obm.nerc-ocp-prod.rc.fas.harvard.edu": {},
           "wrk-86-obm.nerc-ocp-prod.rc.fas.harvard.edu": {},
           "wrk-87-obm.nerc-ocp-prod.rc.fas.harvard.edu": {},
-          "wrk-9-obm.nerc-ocp-prod.rc.fas.harvard.edu": {}
+          "wrk-9-obm.nerc-ocp-prod.rc.fas.harvard.edu": {},
+          "wrk-0-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-1-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-2-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-3-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-4-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-5-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-6-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-7-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-8-obm.nerc-ocp-test.rc.fas.harvard.edu": {},
+          "wrk-9-obm.nerc-ocp-test.rc.fas.harvard.edu": {}
         }
       }
     }

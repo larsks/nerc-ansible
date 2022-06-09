@@ -10,8 +10,9 @@ In this repository:
   `inventory/00-static`:
 
     - `inventory/00-static/common.yaml` -- common variables
-    - `inventory/00-static/ocp-infra.yaml` -- hosts in ocp-infra cluster
-    - `inventory/00-static/ocp-prod.yaml` -- hosts in ocp-prod cluster
+    - `inventory/00-static/ocp-infra.yaml` -- hosts in nerc-ocp-infra cluster
+    - `inventory/00-static/ocp-prod.yaml` -- hosts in nerc-ocp-prod cluster
+    - `inventory/00-static/ocp-test.yaml` -- hosts in nerc-ocp-test cluster
     - `inventory/00-static/ocp-bmc-hosts.json` -- generated list of bmc hostnames
 
   There are [constructed][] inventory files in `inventory/10-constructed`. The constructed inventory defines
